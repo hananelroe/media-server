@@ -2,12 +2,19 @@
 <html>
 <head>
 <style>
+  video{
+  margin-left: 50vw;
+  transform: translate(-50%);
+  }
+
 </style>
 </head>
 <body style="background-color:#015e58;">
-<video width="320" height="240" controls>
+<video width="50%" height="50%" controls>
   <source src="/static/{{ source }}/{{ source }}.webm" type="video/mp4">
-Your browser does not support the video tag.
+  <source src="/static/{{ source }}/{{ source }}.mp4" type="video/mp4">
+  <source src="/static/{{ source }}/{{ source }}.m4a" type="video/mp4">
+  Your browser does not support the video tag.
 </video>
 </body>
 </html>
