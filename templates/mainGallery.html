@@ -28,10 +28,10 @@ img {
 
 
 <div class="grid-container">
-    {%for i in files%}
+    {%for i in fileNames%}
     <div class="grid-item">
         <a href="{{ i }}">
-        <img src="/static/{{ i }}/thumbnail.jpg">
+        <img src="/static/thumbnails/{{ i }}_thumbnail.jpg">
         </a>
         <h6>{{ i }}</h6>
     </div>
