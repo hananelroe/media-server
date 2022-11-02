@@ -5,25 +5,18 @@ import extractFrame
 
 staticFolder = './static'
 
-# organise the video files in the static folder:
-# put each file in a directory that's named the same as the file:
-for file in os.listdir(staticFolder):
-    if '.' in file:  # if it's a file with extension
-        os.mkdir(os.path.join(staticFolder, file.split('.')[0]))
-        # using a linux commands here, because that's what I'm familiar with. you can change it though.(obviously)
-        os.system(f"mv \'{os.path.join(staticFolder, file)}\' \'{os.path.join(staticFolder, file.split('.')[0])}/\'")
+# generate thumbnails if needed:
+existingThumbnails = os.listdir(f'{staticFolder}/thumbnails')
 
-# extract frame from the beginning of each video file for thumbnail:
-for directory in os.listdir(staticFolder):
-    if "thumbnail.jpg" not in os.listdir(os.path.join(staticFolder, directory)):  # if the thumbnail file is missing:
-        #                                               (we can know for sure that "directory" is a directory and not a
-        #                                               file because we moved all the files to directories earlier)
-        # extract a frame and save it as "thumbnail.jpg":
-        currentDir = os.path.join(staticFolder, directory)
-        print(f"generating a thumbnail for {currentDir}...")
-        extractFrame.getFrame(vidPath=os.path.join(currentDir, os.listdir(currentDir)[0]),
-                              frameToCapture=30*60*3,
-                              savePath=os.path.join(currentDir, 'thumbnail.jpg'))
+for file in os.listdir(staticFolder):
+    fileNameWithoutExtension = file.split('.')[0]
+    if '.' in file:  # if it's a file with an extension
+        if f"{fileNameWithoutExtension}_thumbnail.jpg" in existingThumbnails:
+            continue  # skip if the thumbnail already exists
+        else:
+            imagePath = os.path.join(staticFolder, 'thumbnails', f"{fileNameWithoutExtension}_thumbnail.jpg")
+            print(f"generating thumbnail for {file}...")
+            extractFrame.getFrame(os.path.join('./static', file), imagePath)
 
 
 app = Flask(__name__)
@@ -31,9 +24,10 @@ app = Flask(__name__)
 
 @app.route('/')
 def main_gallery():
-    filesList = os.listdir(staticFolder)
-    filesList = sorted(filesList, key=lambda s: sum(map(ord, s)), reverse=True)  # sort by ascii value
-    return render_template('mainGallery.html', files=filesList)
+    filesList = [i for i in os.listdir(staticFolder) if '.' in i]  # filter files/folders without a dot in them
+    #                                                                (a lazy way to filter the folders out)
+    fileNamesWithoutExtesion = [i.split('.')[0] for i in filesList]  # coverts "image.jpg" to "image"
+    return render_template('mainGallery.html', files=filesList, fileNames=fileNamesWithoutExtesion)
 
 
 @app.route('/<file>')
